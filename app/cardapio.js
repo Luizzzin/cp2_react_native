@@ -1,18 +1,21 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 
 export default function Cardapio() {
-    const router = useRouter();
     const lancheUm = {
         nome: "Coxinha",
         preco: 5.00,
         imagem: require("../assets/coxinha.png")
     }
     const [qtd, setQtd] = useState(0);
+    const total = qtd * lancheUm.preco;
 
     return (
         <View style={styles.container}>
+            <View style={styles.carrinho}>
+                <Text style={styles.digito}>Carrinho: R$ {total.toFixed(2)}</Text>
+            </View>
             <View style={styles.lanche}>
                 <Image
                     source={lancheUm.imagem}
@@ -31,6 +34,7 @@ export default function Cardapio() {
                 </View>
 
             </View>
+            
         </View>
     );
 }
@@ -52,12 +56,13 @@ const styles = StyleSheet.create({
     },
     nome: {
         margin: 10,
-        color: '#E83D84',
-        fontSize: 18,
+        color: '#fff',
+        fontSize: 24,
+        fontWeight: 'bold',
     },
     preco: {
         color: '#E83D84',
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 'bold'
     },
     quantidade: {
@@ -79,6 +84,9 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 20,
         fontWeight: 'bold'
+    },
+    carrinho: {
+        padding: 20,
     }
 
 });
