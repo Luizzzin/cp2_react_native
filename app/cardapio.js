@@ -28,6 +28,9 @@ export default function Cardapio() {
             <View style={styles.carrinho}>
                 <Text style={styles.digito}>🛒Carrinho: R$ {total.toFixed(2)}</Text>
             </View>
+            <TouchableOpacity style={styles.carrinho} onPress={() => router.push('/TelaPagamento')}>
+                <Text style={styles.digito}>Finalizar Pedido ✅</Text>
+            </TouchableOpacity>
             <Text style={styles.escolha}>Escolha seus lanches:</Text>
             <ScrollView style={styles.scrol}>
                 <View style={styles.lanche}>
@@ -97,7 +100,9 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#212425'
+        backgroundColor: '#212425',
+        paddingTop: 50,
+        paddingBottom: 20,
     },
     lanche: {
         backgroundColor: '#121213',
@@ -142,15 +147,19 @@ const styles = StyleSheet.create({
     },
     carrinho: {
         backgroundColor: '#121213',
-        padding: 20,
-        margin: 20,
+        padding: 15,
+        margin: 5,
         borderRadius: 10,
     },
     escolha: {
         color: '#e83d84',
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 20,
+        margin: 20,
+    },
+    scrol: {
+        width: '100%',
+        paddingHorizontal: 20,
     }
 
 });
