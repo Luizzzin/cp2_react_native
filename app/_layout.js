@@ -21,7 +21,7 @@ export default function Layout() {
           ),
         }}
       />
-      <Tabs.Screen name="TelaPagamento" options={{ href: null }} />
+      
     </Tabs>
   );
 }
