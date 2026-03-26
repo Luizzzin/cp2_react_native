@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
 export default function Cardapio() {
+    const router = useRouter();
     const lancheUm = {
         nome: "Coxinha",
         preco: 5.00,
