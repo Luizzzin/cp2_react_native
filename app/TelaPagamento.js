@@ -53,7 +53,7 @@ export default function TelaPagamento() {
       cvv === CARTAO_TESTE.cvv
     ) {
       Alert.alert("Sucesso", "Pagamento realizado com sucesso!", [
-        { text: "OK", onPress: () => router.push("/TelaSucesso") },
+        { text: "OK", onPress: () => router.push("/retirada") },
       ]);
     } else {
       Alert.alert("Erro", "Dados do cartão inválidos.");
@@ -71,7 +71,7 @@ export default function TelaPagamento() {
         <ScrollView contentContainerStyle={styles.container}>
           <Text style={styles.titulo}>Pagamento</Text>
 
-          <Text>Número do Cartão de Crédito</Text>
+          <Text style = {styles.textoCartao}>Número do Cartão de Crédito</Text>
           <TextInput
             style={styles.input}
             placeholder="0000 0000 0000 0000"
@@ -79,7 +79,7 @@ export default function TelaPagamento() {
             onChangeText={setNumCartao} // Atualiza o estado com o número do cartão formatado
             keyboardType="numeric" // Permite apenas a entrada de números
           />
-          <Text>Validade</Text>
+          <Text style = {styles.textoCartao}>Validade</Text>
           <TextInput
             style={styles.input}
             placeholder="MM/AA"
@@ -88,7 +88,7 @@ export default function TelaPagamento() {
             maxLength={5}
             keyboardType="numeric"
           />
-          <Text>CVV</Text>
+          <Text style = {styles.textoCartao}>CVV</Text>
           <TextInput
             style={styles.input}
             placeholder="000"
@@ -99,37 +99,46 @@ export default function TelaPagamento() {
           />
 
           {/* Botão para realizar o pagamento */}
-          <TouchableOpacity style={styles.botao} onPress={realizarPagamento}>
+          <TouchableOpacity style={styles.botao} onPress={realizarPagamento()}>
             <Text style={styles.textoBotao}>Pagar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style = {styles.botao} onPress={() => router.push('/cardapio')}>
+            <Text style={styles.textoBotao}>⬅️Retornar ao Cardapio</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
+
   );
 }
 
 const styles = StyleSheet.create({
+
   container: {
+    backgroundColor: "#212425",
     flex: 1,
     padding: 20,
     justifyContent: "center",
   },
   titulo: {
-    fontSize: 24,
+    fontSize: 40,
+    color: 'white',
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
   },
   input: {
     borderWidth: 1,
-    borderColor: "gray",
+    color: 'white',
+    borderColor: "white",
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
     marginTop: 5,
   },
   botao: {
-    backgroundColor: "blue",
+    backgroundColor: "#E83D84",
     padding: 15,
     borderRadius: 5,
     alignItems: "center",
@@ -148,4 +157,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
   },
+  textoCartao:{
+    color: 'white'
+  }
 });
