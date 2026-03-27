@@ -16,11 +16,19 @@ Para logar no aplicativo, é necessário colocar seu RM e senha da plataforma, a
 ## Pré-requisitos
 - Node.js : para baixar o Node.js, vá ao site oficial do Node.js, baixe o ambiente de execução Node.js e, após instalar, defina-o como variável de ambiente. 
 Link do site: https://nodejs.org/pt-br.  
-- EXPO GO: para baixar EXPO, digite um dos códigos abaixo no terminal:
+- EXPO GO: as instruções para configurar o EXPO estão no tópico **Como rodar o projeto**.
+
+-   para baixar EXPO, abra a página do projeto com
+```
+cd cp1_react_native
+```
+Após isso, digite o código abaixo no terminal para ignorar conflitos de peer dependency:
 ```
 npm install -g expo-cli
-# ou
-npx create-expo-app@latest
+```
+Finalmente, instalamos o expo e seus pacotes com o código abaixo:
+```
+npx expo install expo-router react-native-safe-area-context react-native-screens
 ```
 
 ## Como clonar ou baixar o repositório
@@ -36,9 +44,17 @@ git clone https://github.com/r1qk/cp1_react_native.git
 ## Como rodar o projeto 
 Para rodar o projeto, abra a pasta que você criou ao baixar o repositório e abra o terminal (pode ser o terminal do computador ou pelo VSCODE). Após fazer isso, digite o código abaixo para abrir a pasta onde as páginas do app estão localizadas.
 ```
-cd app-cp1r
+cd cp1_react_native
 ```
-Depois disso, inicialize o app digitando o código abaixo:
+Depois disso, digite o código abaixo no terminal para ignorar conflitos de peer dependency:
+```
+npm install -g expo-cli
+```
+Finalmente, instalamos o expo e seus pacotes com o código abaixo:
+```
+npx expo install expo-router react-native-safe-area-context react-native-screens
+```
+Agora o código está pronto para ser incializado. Basta digitar o código abaixo no terminal:
 ```
 npx expo start
 ```
