@@ -61,14 +61,14 @@ npx expo start
 A partir daqui, é possível visualizar o app de duas formas: android studio e app expo no celular.   
 Uma delas é pelo android studio, que é configurado pelo EXPO (também é possível abrir o android studio manualmente, mas é necessário baixá-lo). Digite **a** no terminal para abrir o android studio, e o emulador irá começar a rodar.
 
-(FOTO DO APP RODANDO PRONTO)
+![print_desenvolvimento](print_projeto1.png)
 
 Também é possível rodar o aplicativo no celular, basta baixar o app do EXPO GO no celular e depois apontar a câmera para o QRCODE gerado pelo EXPO no terminal. 
 
 ## Demonstração
 
-(FOTO DE TODAS AS TELAS)
-(GIF BREVE DO APP FUNCIONANDO)
+![demonstracao1](videoUm.gif)
+![demonstracao2](video2.gif)
 
 ## Decisões técnicas
 O aplicativo FIAP CANTEEN foi desenvolvido como um MVP (Minimum Viable Product), com foco em demonstrar a proposta de reduzir filas nas cantinas por meio de pedidos antecipados. Por ser um projeto apenas de front-end, as funcionalidades são simuladas, sem integração com backend.
