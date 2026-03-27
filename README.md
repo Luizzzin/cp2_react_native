@@ -2,8 +2,8 @@
 ### Integrantes
 Luiz Henrique Barbosa Dias | RM: 562399  
 Riquelme Santos da Mata | RM: 565053  
-Gregory  
-Nathan  
+Gregory Debom Ferreira |RM: 562346 
+Nathan  Lopes Silva |RM: 563507
 Rodrigo Kenshin Viana Matayoshi | RM564026
 
 ## APP: FIAP CANTEEN 

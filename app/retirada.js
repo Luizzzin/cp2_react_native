@@ -27,6 +27,9 @@ export default function Sobre() {
         <TouchableOpacity style={styles.CorButton} onPress={gerarNovoCodigo}>
            <Text style={styles.voltar}>Gerar código de retirada</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.CorButton} onPress={() => {router.push('/cardapio')}}>
+           <Text style={styles.voltar}>🔙 Voltar</Text>
+        </TouchableOpacity>
     </View>
   );
 }
@@ -36,5 +39,5 @@ const styles = StyleSheet.create({
   titulo:     { fontSize: 28, fontWeight: 'bold', marginBottom: 12, color: '#fff' },
   descricao:  { fontSize: 18, color: '#fff', marginBottom: 24 },
   voltar:     { fontSize: 16, color: '#E83D84', fontWeight: '600' },
-  CorButton:  { backgroundColor: '#121213', padding: 15, borderRadius: 8, alignItems: 'center', width: '80%' }
+  CorButton:  { backgroundColor: '#121213', padding: 15, borderRadius: 8, alignItems: 'center', width: '80%', margin:'10' , }
 });

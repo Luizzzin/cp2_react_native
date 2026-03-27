@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRouter, Stack } from "expo-router";
+import { useRouter, Stack, useLocalSearchParams } from "expo-router";
 import {
   View,
   Text,
@@ -25,6 +25,8 @@ export default function TelaPagamento() {
   const [validade, setValidade] = useState("");
   const [cvv, setCvv] = useState("");
   const router = useRouter();
+
+  const { total } = useLocalSearchParams();
 
   const formatarValidade = (texto) => {
     // Remove caracteres não numéricos
@@ -55,6 +57,7 @@ export default function TelaPagamento() {
       Alert.alert("Sucesso", "Pagamento realizado com sucesso!", [
         { text: "OK", onPress: () => router.push("/retirada") },
       ]);
+      return;
     } else {
       Alert.alert("Erro", "Dados do cartão inválidos.");
     }
@@ -71,7 +74,7 @@ export default function TelaPagamento() {
         <ScrollView contentContainerStyle={styles.container}>
           <Text style={styles.titulo}>Pagamento</Text>
 
-          <Text style = {styles.textoCartao}>Número do Cartão de Crédito</Text>
+          <Text style={styles.textoCartao}>Número do Cartão de Crédito</Text>
           <TextInput
             style={styles.input}
             placeholder="0000 0000 0000 0000"
@@ -79,7 +82,7 @@ export default function TelaPagamento() {
             onChangeText={setNumCartao} // Atualiza o estado com o número do cartão formatado
             keyboardType="numeric" // Permite apenas a entrada de números
           />
-          <Text style = {styles.textoCartao}>Validade</Text>
+          <Text style={styles.textoCartao}>Validade</Text>
           <TextInput
             style={styles.input}
             placeholder="MM/AA"
@@ -88,7 +91,7 @@ export default function TelaPagamento() {
             maxLength={5}
             keyboardType="numeric"
           />
-          <Text style = {styles.textoCartao}>CVV</Text>
+          <Text style={styles.textoCartao}>CVV</Text>
           <TextInput
             style={styles.input}
             placeholder="000"
@@ -99,11 +102,12 @@ export default function TelaPagamento() {
           />
 
           {/* Botão para realizar o pagamento */}
-          <TouchableOpacity style={styles.botao} onPress={realizarPagamento()}>
+          <Text style={styles.textoBotao}>🛒Carrinho: R$ {total}</Text>
+          <TouchableOpacity style={styles.botao} onPress={realizarPagamento}>
             <Text style={styles.textoBotao}>Pagar</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style = {styles.botao} onPress={() => router.push('/cardapio')}>
+          <TouchableOpacity style={styles.botao} onPress={() => router.push('/cardapio')}>
             <Text style={styles.textoBotao}>⬅️Retornar ao Cardapio</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -157,7 +161,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
   },
-  textoCartao:{
+  textoCartao: {
     color: 'white'
   }
 });
