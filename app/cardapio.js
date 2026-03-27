@@ -4,6 +4,16 @@ import { useState } from 'react';
 
 export default function Cardapio() {
     const router = useRouter();
+
+    const handlePress = () => {
+        router.push({
+            pathname: '/TelaPagamento',
+             params: {
+                total: total.toFixed(2),
+            },
+        });
+    }
+
     const lancheUm = {
         nome: "Coxinha",
         preco: 5.00,
@@ -29,7 +39,7 @@ export default function Cardapio() {
             <View style={styles.carrinho}>
                 <Text style={styles.digito}>🛒Carrinho: R$ {total.toFixed(2)}</Text>
             </View>
-            <TouchableOpacity style={styles.carrinho} onPress={() => router.push('/TelaPagamento')}>
+            <TouchableOpacity style={styles.carrinho} onPress={() => {router.push('/TelaPagamento'); handlePress()}}>
                 <Text style={styles.digito}>Finalizar Pedido ✅</Text>
             </TouchableOpacity>
             <Text style={styles.escolha}>Escolha seus lanches:</Text>
