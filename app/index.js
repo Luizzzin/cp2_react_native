@@ -1,24 +1,54 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Input from '../components/Input';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export default function Home() {
   const router = useRouter();
-  const [text, onChangeText] = useState('');
+  const [text, onChangeName] = useState('');
   const [password, onChangePassword] = useState('');
   const [message, setMessage] = useState('Digite suas credenciais');
-  // credenciais fictícias
-  const fic_rm = '512345';
-  const fic_password = 'coxinha123';
+
+// não apagar o código abaixo (AsyncStorage pra manter o usuário logado)
+
+  // // Auto - login
+  // useEffect(() => {
+  //   const checkLogin = async () => {
+  //     const data_login = await AsyncStorage.getItem('logged');
+
+  //     if (data_login) {
+  //       const user = JSON.parse(data_login);
+  //       router.push('/cardapio');
+  //     }
+  //   }
+  // }, []);
+
+
   // validacao de credenciais
-  const bottomPress = () => {
-    if (text === fic_rm && password === fic_password) {
-      onChangePassword('');
-      onChangeText('');
-      setMessage('Digite suas credenciais')
-      router.push('/cardapio');
-    } else {
-      setMessage('RM ou senha inválidos!')
+  const bottomPress = async () => {
+    try {
+      const data = await AsyncStorage.getItem('users');
+      const users = data ? JSON.parse(data) : [];
+
+      const user = users.find (
+        (user) => user.name === text && user.password === password
+      )
+
+      if (user) {
+        await AsyncStorage.setItem('logged', JSON.stringify(user)); // manter logado
+        router.push('/cardapio');
+      } else {
+          setMessage('Usuário ou senha inválidos');
+      }
+    } catch (error) {
+      setMessage('Houve um erro');
     }
+    
+    } 
+
+  const bottomRegister = () => {
+    router.push('/cadastro');
   }
   
   return (
@@ -35,27 +65,27 @@ export default function Home() {
             <Text style={styles.messageError}>{message}</Text>
         </View>
 
-        <View>
-            <TextInput
-            style={styles.input}
-            onChangeText={onChangeText}
-            value={text}
-            placeholder='RM'
-            />
-        </View>
+        {/* Usando componentes */}
+        <Input
+          onChangeText={onChangeName}
+          value={text}
+          placeholder='Nome'
+          secureTextEntry={false}
+        />
 
-        <View>
-            <TextInput
-            style={styles.input}
-            onChangeText={onChangePassword}
-            value={password}
-            placeholder='Senha'
-            secureTextEntry={true}
-            />
-        </View>
+        <Input
+          onChangeText={onChangePassword}
+          value={password}
+          placeholder='Senha'
+          secureTextEntry={true}
+        />
           
       <TouchableOpacity style={styles.button} onPress={bottomPress}>
         <Text style={styles.textButton}>Entrar</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.buttonRegister} onPress={bottomRegister}>
+        <Text style={styles.textRegister}>Cadastrar</Text>
       </TouchableOpacity>
 
     </View>
@@ -65,7 +95,9 @@ const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#181717'},
   title:    { fontSize: 32, fontWeight: 'bold', marginBottom: 24, color: '#E83D84', textAlign: 'center' },
   button:     { backgroundColor: '#E83D84', padding: 16, borderRadius: 12, marginTop: 24, height: 70, width: 120, alignItems: 'center', justifyContent: 'center'},
-  textButton:{ color: '#fff', fontSize: 16, fontWeight: '600', fontSize: 24  },
+  textButton:{ color: '#fff', fontWeight: '600', fontSize: 24  },
   input: { height: 50, width: 200, margin: 12, borderWidth: 1, padding: 10, backgroundColor: '#fff', textAlign: 'center', borderRadius: 8},
   messageError: { fontSize: 18, marginBottom: 24, color: '#fff', textAlign: 'center' },
+  textRegister :{ color: '#E83D84', fontWeight: '600', fontSize: 20},
+  buttonRegister: {padding: 28, borderRadius: 12},
 });
