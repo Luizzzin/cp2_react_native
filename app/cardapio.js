@@ -53,6 +53,15 @@ export default function Cardapio() {
     }
   };
 
+const handleLogout = async () => {
+  try {
+    await AsyncStorage.removeItem("logged");
+    router.push("/");
+  } catch (error) {
+    console.error("Erro ao deslogar:", error);
+  }
+};
+
   const lancheUm = {
     nome: "Coxinha",
     preco: 5.0,
@@ -77,7 +86,7 @@ export default function Cardapio() {
   return (
     <View style={styles.container}>
       <View style={styles.carrinho}>
-        <Text style={styles.digito}>🛒Carrinho: R$ {total.toFixed(2)}</Text>
+        <Text style={styles.digito}>🛒: R$ {total.toFixed(2)}</Text>
       </View>
       <TouchableOpacity
         style={styles.carrinho}
@@ -90,6 +99,9 @@ export default function Cardapio() {
         }}
       >
         <Text style={styles.digito}>Finalizar Pedido ✅</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.carrinho} onPress={handleLogout}>
+        <Text style={styles.digito}>Logout ⬅</Text>
       </TouchableOpacity>
       <Text style={styles.escolha}>Escolha seus lanches:</Text>
       <ScrollView style={styles.scrol}>
