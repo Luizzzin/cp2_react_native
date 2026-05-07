@@ -13,28 +13,43 @@ import { useState } from "react";
 export default function Cardapio() {
   const router = useRouter();
 
-  const handlePress = () => {
+  const handlePress = async () => {
     try {
-      const usuarioJSON = AsyncStorage.getItem("logged");
-      const usuario = JSON.parse(usuarioJSON);
+      const usuarioJSON = await AsyncStorage.getItem("logged");
 
-      if (usuario?.cartao) {
+      if (!usuarioJSON) {
+        router.push("/");
+        return;
+      }
+
+      let usuario = null;
+
+      try {
+        usuario = JSON.parse(usuarioJSON);
+      } catch (e) {
+        console.error("JSON inválido:", e);
+        return;
+      }
+
+      if ((usuario?.cartoes && usuario.cartoes.length > 0) || usuario.cartao) {
         router.push({
           pathname: "/TelaPagamento",
           params: {
             total: total.toFixed(2),
+            origem: "cardapio",
           },
         });
       } else {
         router.push({
           pathname: "/TelaCadastroCartao",
           params: {
+            origem: "cardapio",
             total: total.toFixed(2),
           },
         });
       }
     } catch (error) {
-      console.error("Erro ao verificar cartão: ", error);
+      console.error("Erro ao verificar cartão:", error);
     }
   };
 
@@ -67,7 +82,10 @@ export default function Cardapio() {
       <TouchableOpacity
         style={styles.carrinho}
         onPress={() => {
-          router.push("/TelaPagamento");
+          router.push({
+            pathname: "/TelaPagamento",
+            params: { total: total.toFixed(2), origem: "cardapio" },
+          });
           handlePress();
         }}
       >
