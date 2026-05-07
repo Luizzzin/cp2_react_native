@@ -9,9 +9,13 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { useUser } from "../context/UserContext";
 
 export default function Cardapio() {
   const router = useRouter();
+  const { user, setUser } = useUser();
+  
+ 
 
   const handlePress = async () => {
     try {
@@ -53,14 +57,16 @@ export default function Cardapio() {
     }
   };
 
-const handleLogout = async () => {
-  try {
-    await AsyncStorage.removeItem("logged");
-    router.push("/");
-  } catch (error) {
-    console.error("Erro ao deslogar:", error);
-  }
-};
+  const handleLogout = async () => {
+    try {
+      setUser(null);
+      await AsyncStorage.removeItem("logged");
+      router.push("/");
+      
+    } catch (error) {
+      console.error("Erro ao deslogar:", error);
+    }
+  };
 
   const lancheUm = {
     nome: "Coxinha",
@@ -85,24 +91,29 @@ const handleLogout = async () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.carrinho}>
-        <Text style={styles.digito}>🛒: R$ {total.toFixed(2)}</Text>
+      <View style={styles.top}>
+        <View style={styles.carrinho}>
+          <Text style={styles.digito}>🛒: R$ {total.toFixed(2)}</Text>
+        </View>
+        <TouchableOpacity style={styles.carrinho} onPress={handleLogout}>
+          <Text style={styles.digito}>Logout ⬅</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.carrinho}
+          onPress={() => {
+            router.push({
+              pathname: "/TelaPagamento",
+              params: { total: total.toFixed(2), origem: "cardapio" },
+            });
+            handlePress();
+          }}
+        >
+          <Text style={styles.digito}>Finalizar Pedido ✅</Text>
+        </TouchableOpacity>
+
       </View>
-      <TouchableOpacity
-        style={styles.carrinho}
-        onPress={() => {
-          router.push({
-            pathname: "/TelaPagamento",
-            params: { total: total.toFixed(2), origem: "cardapio" },
-          });
-          handlePress();
-        }}
-      >
-        <Text style={styles.digito}>Finalizar Pedido ✅</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.carrinho} onPress={handleLogout}>
-        <Text style={styles.digito}>Logout ⬅</Text>
-      </TouchableOpacity>
+
+     <Text style={styles.escolha}>Olá, {user?.name || "visitante"}!</Text>
       <Text style={styles.escolha}>Escolha seus lanches:</Text>
       <ScrollView style={styles.scrol}>
         <View style={styles.lanche}>
@@ -224,14 +235,16 @@ const styles = StyleSheet.create({
   },
   digito: {
     color: "#fff",
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: "bold",
   },
   carrinho: {
     backgroundColor: "#121213",
-    padding: 15,
+    padding: 10,
     margin: 5,
     borderRadius: 10,
+    borderColor: "#E83D84",
+    borderWidth: 1,
   },
   escolha: {
     color: "#e83d84",
@@ -242,5 +255,14 @@ const styles = StyleSheet.create({
   scrol: {
     width: "100%",
     paddingHorizontal: 20,
+  },
+  top: {
+    flexWrap: "wrap",
+    flexDirection: "row",
+    alignContent: "center",
+    justifyContent: "space-around",
+    width: "100%",
+    paddingHorizontal: 10,
+    marginBottom: 10,
   },
 });
