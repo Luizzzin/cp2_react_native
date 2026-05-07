@@ -41,7 +41,13 @@ export default function cadastro() {
     }
 
     if (!erro) {
-      const newUser = { id: Date.now().toString(), name, email, password };
+      const newUser = {
+        id: Date.now().toString(),
+        name,
+        email,
+        password,
+        cartoes: [],
+      };
       try {
         // 1. Pegar usuários que já existem
         const data = await AsyncStorage.getItem("users");
