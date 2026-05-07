@@ -1,9 +1,11 @@
+// app/_layout.js
+import { Stack } from 'expo-router';
 import { UserProvider } from '../context/UserContext';
-import Home from './index';
-export default function App() {
+
+export default function Layout() {
   return (
     <UserProvider>
-      <Home />
+      <Stack screenOptions={{ headerShown: false }} />
     </UserProvider>
   );
 }
