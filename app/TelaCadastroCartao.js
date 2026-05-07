@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRouter, Stack } from "expo-router";
+import { useRouter, Stack, useLocalSearchParams } from "expo-router";
 import {
   View,
   Text,
@@ -22,11 +22,27 @@ export default function CadastroCartao() {
   const [errors, setErrors] = useState({});
 
   const router = useRouter();
+  const { origem } = useLocalSearchParams();
+
+  const voltar = () => {
+    if (origem === "pagamento") {
+      router.push("/TelaPagamento");
+    } else {
+      router.push("/cardapio");
+    }
+  };
 
   const formatarValidade = (texto) => {
     const numeros = texto.replace(/\D/g, "");
     if (numeros.length <= 2) return numeros;
     return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}`;
+  };
+
+  const formatarCartao = (texto) => {
+    let numeros = texto.replace(/\D/g, "");
+    numeros = numeros.slice(0, 16);
+    const formatado = numeros.replace(/(\d{4})(?=\d)/g, "$1 ");
+    return formatado;
   };
 
   const validar = () => {
@@ -44,26 +60,43 @@ export default function CadastroCartao() {
   const salvarCartao = async () => {
     if (!validar()) return;
 
-    const usuarioJSON = await AsyncStorage.getItem("usuarioLogado");
+    const usuarioJSON = await AsyncStorage.getItem("logged");
     const usuario = JSON.parse(usuarioJSON);
 
     const usersJSON = await AsyncStorage.getItem("users");
     const users = JSON.parse(usersJSON) || [];
 
-    const cartao = { numero: numCartao, validade, cvv, nome };
+    const novoCartao = {
+      numero: numCartao,
+      validade,
+      cvv,
+      nome,
+    };
+
+    const cartoesAtuais = usuario.cartoes
+      ? usuario.cartoes
+      : usuario.cartao
+        ? [usuario.cartao]
+        : [];
+
+    const novosCartoes = [...cartoesAtuais, novoCartao];
 
     const novosUsers = users.map((u) =>
-      u.id === usuario.id ? { ...u, cartao } : u,
+      u.id === usuario.id ? { ...u, cartoes: novosCartoes } : u,
     );
 
     await AsyncStorage.setItem("users", JSON.stringify(novosUsers));
+
     await AsyncStorage.setItem(
-      "usuarioLogado",
-      JSON.stringify({ ...usuario, cartao }),
+      "logged",
+      JSON.stringify({
+        ...usuario,
+        cartoes: novosCartoes,
+      }),
     );
 
     Alert.alert("Sucesso", "Cartão salvo!");
-    router.push("/pagamento");
+    router.push("/TelaPagamento");
   };
 
   return (
@@ -85,7 +118,8 @@ export default function CadastroCartao() {
               placeholderTextColor="#aaa"
               value={nome}
               onChangeText={(text) => {
-                setNome(text);
+                const somenteLetras = text.replace(/[^a-zA-Z\s]/g, "");
+                setNome(somenteLetras);
                 setErrors((prev) => ({ ...prev, nome: "" }));
               }}
             />
@@ -99,7 +133,11 @@ export default function CadastroCartao() {
               placeholder="0000 0000 0000 0000"
               placeholderTextColor="#aaa"
               value={numCartao}
-              onChangeText={setNumCartao}
+              onChangeText={(text) => {
+                const somenteNumeros = text.replace(/\D/g, "");
+                setNumCartao(formatarCartao(somenteNumeros));
+                setErrors((prev) => ({ ...prev, numCartao: "" }));
+              }}
               keyboardType="numeric"
             />
             {errors.numCartao && (
@@ -129,7 +167,12 @@ export default function CadastroCartao() {
                 placeholder="123"
                 placeholderTextColor="#aaa"
                 value={cvv}
-                onChangeText={setCvv}
+                onChangeText={(text) => {
+                  const somenteNumeros = text.replace(/\D/g, "");
+                  setCvv(somenteNumeros);
+                  setErrors((prev) => ({ ...prev, cvv: "" }));
+                }}
+                keyboardType="numeric"
                 secureTextEntry
               />
               {errors.cvv && <Text style={styles.erro}>* {errors.cvv}</Text>}
@@ -138,6 +181,16 @@ export default function CadastroCartao() {
 
           <TouchableOpacity style={styles.botao} onPress={salvarCartao}>
             <Text style={styles.textoBotao}>Salvar Cartão</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={voltar}>
+            <Text
+              style={[
+                styles.textoBotao,
+                { backgroundColor: "transparent", marginTop: 10, opacity: 0.7 },
+              ]}
+            >
+              Voltar
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
