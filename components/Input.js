@@ -9,7 +9,7 @@ export default function Input({
   return (
     <View>
       <TextInput
-        style={styles.input}
+        style={[styles.input]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
