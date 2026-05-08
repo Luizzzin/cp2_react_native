@@ -1,12 +1,23 @@
-import { View, Text, TouchableOpacity, StyleSheet, Button, Alert} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react'; 
+import { useState } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Sobre() {
   const router = useRouter();
   
   const [armazenar, setArmazenar] = useState("");
   const [codigoGerado, setCodigoGerado] = useState(false);
+  const [qtd, setQtd] = useState(0);
+  const [qtd2, setQtd2] = useState(0);
+  const [qtd3, setQtd3] = useState(0);
+
+  const limparCarrinho = async () => {
+    await AsyncStorage.removeItem("carrinho");
+    setQtd(0);
+    setQtd2(0);
+    setQtd3(0);
+  };
 
   function gerarNovoCodigo() {
 
@@ -40,7 +51,9 @@ export default function Sobre() {
           {codigoGerado ? "Código já gerado" : "Gerar código de retirada"}
         </Text>
       </TouchableOpacity>
-        <TouchableOpacity style={styles.CorButton} onPress={() => {router.push('/cardapio')}}>
+        <TouchableOpacity style={styles.CorButton} onPress={() => {
+          limparCarrinho(),
+          router.push('/cardapio')}}>
            <Text style={styles.voltar}>🔙 Voltar</Text>
         </TouchableOpacity>
     </View>

@@ -62,6 +62,7 @@ VÍDEOS
 ![demonstracao1](cp2_gif1.gif)
 ![demonstracao2](cp2_gif2.gif)
 ![demonstracao3](cp2_gif3.gif)
+![demonstracao4](cp2_video4.gif)
 
 obs: falta as telas depois da tela de cadastro
 
@@ -74,18 +75,17 @@ O hook useEffect foi utilizado para gerenciar estados e efeitos colaterais, como
 
 A navegação do aplicativo foi organizada de forma linear e intuitiva, simulando a jornada do usuário dentro do sistema. O fluxo inicia na tela de Login, onde o usuário insere suas credenciais. Após a validação (simulada), o usuário é direcionado para o Menu de Lanches, onde pode visualizar e selecionar produtos. Em seguida, há a tela de Confirmação de Pagamento, que representa a finalização do pedido. Por fim, o usuário é direcionado para uma tela de Sucesso, onde é exibido um código do lanche para retirada, simulando o funcionamento real do sistema.
 
-### Novas adições (obs: ajustar)
-- como o projeto foi estruturado, quais contexts foram criadas 🆗, como a autenticação foi implementada, como asyncstorage foi implementado e quais dados foram persistidos e diferencial das aulas.  
-
+### Novas adições ()
 ```
-CP2_REACT_NATIVE/ (AJUSTAR)
+CP2_REACT_NATIVE/ ()
 ├── app/
 │   ├── _layout.js
 │   ├── index.js (login)
 │   ├── cadastro.js
 │   ├── cardapio.js
 │   ├── retirada.js
-│   └── TelaPagamento.js
+│   ├── TelaPagamento.js
+│   └── TelaCadastroCartao.js
 ├── assets/
 ├── components/
 │   └── Input.js
@@ -99,15 +99,15 @@ Foi utilizado a context **UserContext** para compartilhar o usuário logado entr
 No projeto, a autenticação é feita de forma manual comparando o que o usuário digitou com o que está salvo no AsyncStorage. No index.js, ao clicar em "Entrar", busca a lista de usuários na chave 'users' e usa .find() para verificar se existe alguém com aquele nome e senha. Se encontrar, salva na chave 'logged' e popula o contexto com setUser(user). Não há token, JWT ou autenticação externa — é tudo local.
 
 ### AsyncStorage
-Já o **AsyncStorage** serve para persistir dados mesmo depois de fechar o app, funciona como um banco de dados local simples no celular. No projeto foi usado em três situações: salvar a lista de usuários cadastrados com a chave **users**, salvar o usuário logado com a chave **logged** para o auto-login funcionar, e remover a chave **logged** no logout para encerrar a sessão. A diferença pro UserContext é que o AsyncStorage sobrevive ao fechar o app, enquanto o contexto é apagado toda vez que o app reinicia — por isso os dois foram usados juntos.
+Já o **AsyncStorage** serve para persistir dados mesmo depois de fechar o app, funciona como um banco de dados local simples no celular. No projeto foi usado em três situações: salvar a lista de usuários cadastrados com a chave **users**, salvar o usuário logado com a chave **logged** para o auto-login funcionar, e remover a chave **logged** no logout para encerrar a sessão. 
+
+A diferença pro UserContext é que o AsyncStorage sobrevive ao fechar o app, enquanto o contexto é apagado toda vez que o app reinicia — por isso os dois foram usados juntos. O AsyncStorage também foi utilizado para a persistência de dados dos itens do carrinho. Também foi utilizado na tela "TelaCadastroCartao" para salvar os cartões caso o usuário tente comprar algo.
 
 ### Navegação protegida
 No projeto ela foi feita de duas formas. No index.js, o useEffect verifica ao abrir o app se já existe um usuário salvo no AsyncStorage — se sim, redireciona direto para o cardápio sem precisar logar de novo. No cardapio.js, o handlePress verifica se existe um usuário logado antes de ir para a tela de pagamento — se não existir, manda de volta para o login.
 
-### Diferencial
-modal
-
-obs: ver as telas do luiz e do rodrigo
+### Diferencial - modal
+Modal é um componente de interface que surge sobre o conteúdo principal de uma página, criando uma janela Pop-up. Ele desativa a interação com o resto da página. A diferença dele para um Alert é que ele exige mais atenção, pois exibe um maior número de informações.
 
 ## O que o grupo faria se tivesse mais tempo
 ### Banco de dados e perfil de administrador
