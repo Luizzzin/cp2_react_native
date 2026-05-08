@@ -6,27 +6,40 @@ export default function Sobre() {
   const router = useRouter();
   
   const [armazenar, setArmazenar] = useState("");
+  const [codigoGerado, setCodigoGerado] = useState(false);
 
   function gerarNovoCodigo() {
+
+    if (codigoGerado) return; 
+
     const codigoAleatorio = Math.floor(Math.random() * 10000)
       .toString()
       .padStart(4, '0');
     
     setArmazenar(codigoAleatorio);
-    
+    setCodigoGerado(true);
   }
 
   return (
     <View style={styles.container}>
-        <Text style={styles.titulo}>Retirada</Text>
+      <Text style={styles.titulo}>Retirada</Text>
 
-        <Text style={styles.descricao}>
-          Código gerado: {armazenar || "----"}
+      <Text style={styles.descricao}>
+        Código gerado: {armazenar || "----"}
+      </Text>
+
+      <TouchableOpacity
+        style={[
+          styles.CorButton,
+          codigoGerado && { opacity: 0.5 }
+        ]}
+        onPress={gerarNovoCodigo}
+        disabled={codigoGerado}
+      >
+        <Text style={styles.voltar}>
+          {codigoGerado ? "Código já gerado" : "Gerar código de retirada"}
         </Text>
-    
-        <TouchableOpacity style={styles.CorButton} onPress={gerarNovoCodigo}>
-           <Text style={styles.voltar}>Gerar código de retirada</Text>
-        </TouchableOpacity>
+      </TouchableOpacity>
         <TouchableOpacity style={styles.CorButton} onPress={() => {router.push('/cardapio')}}>
            <Text style={styles.voltar}>🔙 Voltar</Text>
         </TouchableOpacity>
