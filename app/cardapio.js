@@ -5,17 +5,29 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  Pressable,
+  Modal
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "../context/UserContext";
 
 export default function Cardapio() {
   const router = useRouter();
   const { user, setUser } = useUser();
+
+  const salvarCarrinho = async (novaQtd, novaQtd2, novaQtd3) => {
+    const carrinho = {
+      qtd: novaQtd,
+      qtd2: novaQtd2,
+      qtd3: novaQtd3,
+    };
+    await AsyncStorage.setItem("carrinho", JSON.stringify(carrinho));
+
+  };
+
   
- 
 
   const handlePress = async () => {
     try {
@@ -57,12 +69,15 @@ export default function Cardapio() {
     }
   };
 
+  
+
   const handleLogout = async () => {
     try {
       setUser(null);
       await AsyncStorage.removeItem("logged");
+      await limparCarrinho();
       router.push("/");
-      
+
     } catch (error) {
       console.error("Erro ao deslogar:", error);
     }
@@ -88,32 +103,67 @@ export default function Cardapio() {
   const [qtd3, setQtd3] = useState(0);
   const total =
     lancheUm.preco * qtd + lancheDois.preco * qtd2 + lancheTres.preco * qtd3;
+  const [modalVisible, setModalVisible] = useState(false);
 
+  useEffect(() => {
+    const carregarCarrinho = async () => {
+      const data = await AsyncStorage.getItem("carrinho");
+      if (data) {
+        const carrinho = JSON.parse(data);
+        setQtd(carrinho.qtd || 0);
+        setQtd2(carrinho.qtd2 || 0);
+        setQtd3(carrinho.qtd3 || 0);
+      }
+    };
+    carregarCarrinho();
+  }, []);
+  const limparCarrinho = async () => {
+    await AsyncStorage.removeItem("carrinho");
+    setQtd(0);
+    setQtd2(0);
+    setQtd3(0);
+  };
   return (
     <View style={styles.container}>
-      <View style={styles.top}>
-        <View style={styles.carrinho}>
-          <Text style={styles.digito}>🛒: R$ {total.toFixed(2)}</Text>
+      {/* MODAL */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}>
+        {/* area interna do modal */}
+        <View style={styles.centerModal}>
+          <View style={styles.ModalView}>
+            <Text style={styles.nome}>Seu Carrinho:</Text>
+
+            {qtd > 0 && <Text style={styles.digito}>Coxinha x{qtd} — R$ {(lancheUm.preco * qtd).toFixed(2)}</Text>}
+            {qtd2 > 0 && <Text style={styles.digito}>Cookie x{qtd2} — R$ {(lancheDois.preco * qtd2).toFixed(2)}</Text>}
+            {qtd3 > 0 && <Text style={styles.digito}>Cafezinho x{qtd3} — R$ {(lancheTres.preco * qtd3).toFixed(2)}</Text>}
+            {qtd === 0 && qtd2 === 0 && qtd3 === 0 && (
+              <Text style={styles.digito}>Carrinho vazio 🛒</Text>
+            )}
+
+            <Text style={styles.preco}>Total: R$ {total.toFixed(2)}</Text>
+
+            <Pressable style={styles.carrinho} onPress={() => setModalVisible(false)}>
+              <Text style={styles.digito}>Fechar</Text>
+            </Pressable>
+          </View>
         </View>
+      </Modal>
+      {/* View dos botes */}
+      <View style={styles.top}>
         <TouchableOpacity style={styles.carrinho} onPress={handleLogout}>
           <Text style={styles.digito}>Logout ⬅</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.carrinho}
-          onPress={() => {
-            router.push({
-              pathname: "/TelaPagamento",
-              params: { total: total.toFixed(2), origem: "cardapio" },
-            });
-            handlePress();
-          }}
-        >
-          <Text style={styles.digito}>Finalizar Pedido ✅</Text>
+        <TouchableOpacity style={styles.carrinho} onPress={() => setModalVisible(true)}>
+          <Text style={styles.digito}>🛒: R$ {total.toFixed(2)}</Text>
         </TouchableOpacity>
+        
 
       </View>
-
-     <Text style={styles.escolha}>Olá, {user?.name || "visitante"}!</Text>
+      {/* Parte do cardápio */}
+      <Text style={styles.escolha}>Olá, {user?.name || "visitante"}!</Text>
       <Text style={styles.escolha}>Escolha seus lanches:</Text>
       <ScrollView style={styles.scrol}>
         <View style={styles.lanche}>
@@ -123,14 +173,22 @@ export default function Cardapio() {
           <View style={styles.quantidade}>
             <TouchableOpacity
               style={styles.botao}
-              onPress={() => setQtd(qtd > 0 ? qtd - 1 : 0)}
+              onPress={() => {
+                const nova = qtd > 0 ? qtd - 1 : 0;
+                setQtd(nova);
+                salvarCarrinho(nova, qtd2, qtd3);
+              }}
             >
               <Text style={styles.digito}>-</Text>
             </TouchableOpacity>
             <Text style={styles.digito}>{qtd}</Text>
             <TouchableOpacity
               style={styles.botao}
-              onPress={() => setQtd(qtd + 1)}
+              onPress={() => {
+                const nova = qtd + 1;
+                setQtd(nova);
+                salvarCarrinho(nova, qtd2, qtd3);
+              }}
             >
               <Text style={styles.digito}>+</Text>
             </TouchableOpacity>
@@ -146,14 +204,22 @@ export default function Cardapio() {
           <View style={styles.quantidade}>
             <TouchableOpacity
               style={styles.botao}
-              onPress={() => setQtd2(qtd2 > 0 ? qtd2 - 1 : 0)}
+              onPress={() => {
+                const nova = qtd2 > 0 ? qtd2 - 1 : 0;
+                setQtd2(nova);
+                salvarCarrinho(qtd, nova, qtd3);
+              }}
             >
               <Text style={styles.digito}>-</Text>
             </TouchableOpacity>
             <Text style={styles.digito}>{qtd2}</Text>
             <TouchableOpacity
               style={styles.botao}
-              onPress={() => setQtd2(qtd2 + 1)}
+              onPress={() => {
+                const nova = qtd2 + 1;
+                setQtd2(nova);
+                salvarCarrinho(qtd, nova, qtd3);
+              }}
             >
               <Text style={styles.digito}>+</Text>
             </TouchableOpacity>
@@ -169,20 +235,40 @@ export default function Cardapio() {
           <View style={styles.quantidade}>
             <TouchableOpacity
               style={styles.botao}
-              onPress={() => setQtd3(qtd3 > 0 ? qtd3 - 1 : 0)}
+              onPress={() => {
+                const nova = qtd3 > 0 ? qtd3 - 1 : 0;
+                setQtd3(nova);
+                salvarCarrinho(qtd, qtd2, nova);
+              }}
             >
               <Text style={styles.digito}>-</Text>
             </TouchableOpacity>
             <Text style={styles.digito}>{qtd3}</Text>
             <TouchableOpacity
               style={styles.botao}
-              onPress={() => setQtd3(qtd3 + 1)}
+              onPress={() => {
+                const nova = qtd3 + 1;
+                setQtd3(nova);
+                salvarCarrinho(qtd, qtd2, nova);
+              }}
             >
               <Text style={styles.digito}>+</Text>
             </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
+      <TouchableOpacity
+          style={styles.carrinho}
+          onPress={() => {
+            router.push({
+              pathname: "/TelaPagamento",
+              params: { total: total.toFixed(2), origem: "cardapio" },
+            });
+            handlePress();
+          }}
+        >
+          <Text style={styles.digito}>Finalizar Pedido ✅</Text>
+        </TouchableOpacity>
     </View>
   );
 }
@@ -242,6 +328,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#121213",
     padding: 10,
     margin: 5,
+    marginTop: 10,
     borderRadius: 10,
     borderColor: "#E83D84",
     borderWidth: 1,
@@ -264,5 +351,27 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 10,
     marginBottom: 10,
+  },
+  // estilos do modal
+  centerModal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  ModalView: {
+    margin: 20,
+    backgroundColor: '#121213',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#e83d84',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 5,
   },
 });
