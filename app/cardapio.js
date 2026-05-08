@@ -6,7 +6,6 @@ import {
   Image,
   ScrollView,
   Pressable,
-  Alert,
   Modal
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -70,12 +69,7 @@ export default function Cardapio() {
     }
   };
 
-  const limparCarrinho = async () => {
-    await AsyncStorage.removeItem("carrinho");
-    setQtd(0);
-    setQtd2(0);
-    setQtd3(0);
-  };
+  
 
   const handleLogout = async () => {
     try {
@@ -123,6 +117,12 @@ export default function Cardapio() {
     };
     carregarCarrinho();
   }, []);
+  const limparCarrinho = async () => {
+    await AsyncStorage.removeItem("carrinho");
+    setQtd(0);
+    setQtd2(0);
+    setQtd3(0);
+  };
   return (
     <View style={styles.container}>
       {/* MODAL */}
@@ -130,10 +130,7 @@ export default function Cardapio() {
         visible={modalVisible}
         transparent={true}
         animationType="fade"
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
+        onRequestClose={() => setModalVisible(false)}>
         {/* area interna do modal */}
         <View style={styles.centerModal}>
           <View style={styles.ModalView}>
