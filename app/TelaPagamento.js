@@ -17,6 +17,10 @@ export default function Pagamento() {
   const [cartaoSelecionado, setCartaoSelecionado] = useState(null);
   const router = useRouter();
 
+  const voltar = () => {
+      router.push("/cardapio");
+  };
+
   useEffect(() => {
     carregar();
   }, []);
@@ -99,6 +103,18 @@ export default function Pagamento() {
         >
           <Text style={styles.textoBotao}>Alterar Cartão</Text>
         </TouchableOpacity>
+
+          <TouchableOpacity onPress={voltar}>
+            <Text
+              style={[
+                styles.textoBotao,
+                { backgroundColor: "transparent", marginTop: 10, opacity: 0.7 },
+              ]}
+            >
+              Voltar
+            </Text>
+          </TouchableOpacity>
+
       </ScrollView>
     </SafeAreaView>
   );

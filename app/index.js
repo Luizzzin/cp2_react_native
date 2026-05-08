@@ -23,9 +23,11 @@ export default function Home() {
 
       if (data_login) {
         const user = JSON.parse(data_login);
+        setUser(user);
         router.push('/cardapio');
       }
     }
+    checkLogin();
   }, []);
 
 
