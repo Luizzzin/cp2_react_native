@@ -16,17 +16,17 @@ export default function Home() {
 
 // não apagar o código abaixo (AsyncStorage pra manter o usuário logado)
 
-  // // Auto - login
-  // useEffect(() => {
-  //   const checkLogin = async () => {
-  //     const data_login = await AsyncStorage.getItem('logged');
+  // Auto - login
+  useEffect(() => {
+    const checkLogin = async () => {
+      const data_login = await AsyncStorage.getItem('logged');
 
-  //     if (data_login) {
-  //       const user = JSON.parse(data_login);
-  //       router.push('/cardapio');
-  //     }
-  //   }
-  // }, []);
+      if (data_login) {
+        const user = JSON.parse(data_login);
+        router.push('/cardapio');
+      }
+    }
+  }, []);
 
 
   // validacao de credenciais
