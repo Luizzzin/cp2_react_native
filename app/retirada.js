@@ -35,9 +35,9 @@ export default function Sobre() {
 }
 
 const styles = StyleSheet.create({
-  container:  { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#212425' },
+  container:  { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#212425'},
   titulo:     { fontSize: 28, fontWeight: 'bold', marginBottom: 12, color: '#fff' },
   descricao:  { fontSize: 18, color: '#fff', marginBottom: 24 },
   voltar:     { fontSize: 16, color: '#E83D84', fontWeight: '600' },
-  CorButton:  { backgroundColor: '#121213', padding: 15, borderRadius: 8, alignItems: 'center', width: '80%', margin:'10' , }
+  CorButton:  { backgroundColor: '#121213', padding: 15, borderRadius: 8, alignItems: 'center', width: '80%', marginBottom: 15, }
 });

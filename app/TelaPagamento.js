@@ -3,165 +3,192 @@ import { useRouter, Stack, useLocalSearchParams } from "expo-router";
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   TouchableOpacity,
   Alert,
   ScrollView,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect } from "react";
 
-// Cartão de teste para validação simples
-const CARTAO_TESTE = {
-  numCartao: "4242 4242 4242 4242",
-  validade: "12/34",
-  cvv: "123",
-};
-
-export default function TelaPagamento() {
-  const [numCartao, setNumCartao] = useState("");
-  const [validade, setValidade] = useState("");
-  const [cvv, setCvv] = useState("");
+export default function Pagamento() {
+  const [cartoes, setCartoes] = useState([]);
+  const [cartaoSelecionado, setCartaoSelecionado] = useState(null);
   const router = useRouter();
 
-  const { total } = useLocalSearchParams();
+  useEffect(() => {
+    carregar();
+  }, []);
 
-  const formatarValidade = (texto) => {
-    // Remove caracteres não numéricos
-    const numeros = texto.replace(/\D/g, "");
-    // Se o usuario apaga tudo limpa o estado
-    if (numeros.length <= 2) {
-      return numeros;
+  const carregar = async () => {
+    const userJSON = await AsyncStorage.getItem("logged");
+
+    if (!userJSON) {
+      Alert.alert("Erro", "Faça login novamente");
+      router.replace("/");
+      return;
     }
-    // Formata para MM/AA
-    return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}`;
+
+    const user = JSON.parse(userJSON);
+
+    if ((!user.cartoes || user.cartoes.length === 0) && !user.cartao) {
+      Alert.alert("Aviso", "Cadastre um cartão primeiro");
+      router.push("/TelaCadastroCartao");
+      return;
+    }
+
+    let listaCartoes = [];
+    if (user.cartoes && user.cartoes.length > 0) {
+      listaCartoes = user.cartoes;
+    } else if (user.cartao) {
+      listaCartoes = [user.cartao];
+    }
+
+    setCartoes(listaCartoes);
+    setCartaoSelecionado(listaCartoes[0]);
   };
 
-  // Valida se os dados são iguais ao cartão de teste
-  // Caso sejam válidos, exibe uma mensagem de sucesso, caso contrário, exibe um erro
-  const realizarPagamento = () => {
-    const numCartaoLimpo = numCartao.trim().replace(/\s/g, ""); // Remove espaços do número do cartão
-    const numCartaoTesteLimpo = CARTAO_TESTE.numCartao.replace(/\s/g, ""); // Remove espaços do número do cartão de teste
-
-    if (!numCartaoLimpo || !validade || !cvv) {
-      Alert.alert("Erro", "Por favor, preencha todos os campos.");
-      return;
-    }
-    if (
-      numCartaoLimpo === numCartaoTesteLimpo &&
-      validade === CARTAO_TESTE.validade &&
-      cvv === CARTAO_TESTE.cvv
-    ) {
-      Alert.alert("Sucesso", "Pagamento realizado com sucesso!", [
-        { text: "OK", onPress: () => router.push("/retirada") },
-      ]);
-      return;
-    } else {
-      Alert.alert("Erro", "Dados do cartão inválidos.");
-    }
+  const pagar = () => {
+    Alert.alert("Sucesso", "Pagamento realizado!", [
+      { text: "OK", onPress: () => router.push("/retirada") },
+    ]);
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Stack.Screen options={{ headerShown: false }} />
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <ScrollView contentContainerStyle={styles.container}>
-          <Text style={styles.titulo}>Pagamento</Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.titulo}>Pagamento</Text>
 
-          <Text style={styles.textoCartao}>Número do Cartão de Crédito</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="0000 0000 0000 0000"
-            value={numCartao} // Exibe o número do cartão formatado
-            onChangeText={setNumCartao} // Atualiza o estado com o número do cartão formatado
-            keyboardType="numeric" // Permite apenas a entrada de números
-          />
-          <Text style={styles.textoCartao}>Validade</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="MM/AA"
-            value={validade}
-            onChangeText={(texto) => setValidade(formatarValidade(texto))} // Formata a validade enquanto o usuário digita
-            maxLength={5}
-            keyboardType="numeric"
-          />
-          <Text style={styles.textoCartao}>CVV</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="000"
-            value={cvv}
-            onChangeText={setCvv}
-            keyboardType="numeric"
-            secureTextEntry // Esconde o código CVV para segurança
-          />
+        {cartoes.map((cartao, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.bloco,
+              cartaoSelecionado?.numero === cartao.numero && {
+                borderColor: "#E83D84",
+                borderWidth: 2,
+                padding: 10,
+                borderRadius: 8,
+              },
+            ]}
+            onPress={() => setCartaoSelecionado(cartao)}
+          >
+            <Text style={styles.textoCartao}>
+              Cartão: **** **** **** {cartao.numero.slice(-4)}
+            </Text>
 
-          {/* Botão para realizar o pagamento */}
-          <Text style={styles.textoBotao}>🛒Carrinho: R$ {total}</Text>
-          <TouchableOpacity style={styles.botao} onPress={realizarPagamento}>
-            <Text style={styles.textoBotao}>Pagar</Text>
+            <Text style={styles.textoCartao}>Validade: {cartao.validade}</Text>
           </TouchableOpacity>
+        ))}
 
-          <TouchableOpacity style={styles.botao} onPress={() => router.push('/cardapio')}>
-            <Text style={styles.textoBotao}>⬅️Retornar ao Cardapio</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        <TouchableOpacity style={styles.botao} onPress={pagar}>
+          <Text style={styles.textoBotao}>Pagar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botaoSecundario}
+          onPress={() =>
+            router.push({
+              pathname: "/TelaCadastroCartao",
+              params: { origem: "pagamento" },
+            })
+          }
+        >
+          <Text style={styles.textoBotao}>Alterar Cartão</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
-
   );
 }
 
 const styles = StyleSheet.create({
-
   container: {
-    backgroundColor: "#212425",
+    backgroundColor: "#181717",
     flex: 1,
     padding: 20,
     justifyContent: "center",
   },
+
   titulo: {
-    fontSize: 40,
-    color: 'white',
+    fontSize: 36,
+    color: "#E83D84",
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 25,
     textAlign: "center",
   },
+
+  bloco: {
+    marginBottom: 15,
+  },
+
+  textoCartao: {
+    color: "white",
+    fontSize: 14,
+    marginBottom: 5,
+  },
+
   input: {
     borderWidth: 1,
-    color: 'white',
+    color: "white",
     borderColor: "white",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-    marginTop: 5,
+    borderRadius: 8,
+    padding: 12,
   },
+
+  inputErro: {
+    borderColor: "#ff4d4d",
+  },
+
+  erro: {
+    color: "#ff4d4d",
+    fontSize: 12,
+    marginTop: 4,
+  },
+
+  row: {
+    flexDirection: "row",
+  },
+
+  coluna: {
+    flex: 1,
+  },
+
+  colunaEspaco: {
+    flex: 1,
+    marginRight: 10,
+  },
+
   botao: {
     backgroundColor: "#E83D84",
-    padding: 15,
-    borderRadius: 5,
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 15,
+  },
+
+  botaoSecundario: {
+    backgroundColor: "#E83D84",
+    padding: 14,
+    borderRadius: 8,
     alignItems: "center",
     marginTop: 10,
+    opacity: 0.7,
   },
+
   textoBotao: {
     color: "white",
     fontWeight: "bold",
     fontSize: 16,
   },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  label: {
-    fontSize: 16,
+
+  total: {
+    color: "white",
+    textAlign: "center",
+    marginTop: 10,
     marginBottom: 5,
+    fontSize: 15,
   },
-  textoCartao: {
-    color: 'white'
-  }
 });
